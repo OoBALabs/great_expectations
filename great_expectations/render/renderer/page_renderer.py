@@ -130,9 +130,12 @@ class ValidationResultsPageRenderer(Renderer):
             )
 
         if validation_results["meta"].get("batch_kwargs"):
+            dikt = validation_results["meta"].get("batch_kwargs")
+            dikt.pop('reader_options', None)
+            dikt.pop('spark_context', None)
             collapse_content_blocks.append(
                 self._render_nested_table_from_dict(
-                    input_dict=validation_results["meta"].get("batch_kwargs"),
+                    input_dict=dikt,
                     header="Batch Kwargs",
                 )
             )
@@ -330,7 +333,7 @@ class ValidationResultsPageRenderer(Renderer):
                     }
                 ),
                 "table": [
-                    ["Great Expectations Version", ge_version],
+                    # ["Great Expectations Version", ge_version],
                     ["Run Name", run_name],
                     ["Run Time", run_time],
                 ],
@@ -623,7 +626,7 @@ class ExpectationSuitePageRenderer(Renderer):
                 ),
                 "table": [
                     ["Expectation Suite Name", expectation_suite_name],
-                    ["Great Expectations Version", ge_version],
+                    # ["Great Expectations Version", ge_version],
                 ],
                 "styling": {
                     "classes": ["col-12", "table-responsive", "mt-1"],
