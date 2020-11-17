@@ -167,7 +167,7 @@ class DefaultJinjaView:
                     if render_to_markdown:
                         rendered_block += str(content_block_el)
                     else:
-                        rendered_block += "<span>" + str(content_block_el) + "</span>"
+                        rendered_block += "<span>" + str(content_block_el) + "</span>&nbsp"
             return rendered_block
         elif not isinstance(content_block, dict):
             return content_block
