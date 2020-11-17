@@ -89,6 +89,9 @@ class SparkDFDatasource(Datasource):
         else:
             data_asset_type = classConfigSchema.dump(ClassConfig(**data_asset_type))
 
+        if 'spark_context' in kwargs.keys():
+            spark_config = kwargs['spark_context']
+
         if spark_config is None:
             spark_config = {}
 
@@ -136,6 +139,11 @@ class SparkDFDatasource(Datasource):
         )
 
         try:
+            if configuration_with_defaults['spark_config'].get('spark.hadoop.fs.s3a.impl') != None:
+                spark = SparkSession.getActiveSession()
+                if spark is not None:
+                    spark.stop()
+
             builder = SparkSession.builder
             for k, v in configuration_with_defaults["spark_config"].items():
                 builder.config(k, v)
@@ -190,6 +198,11 @@ class SparkDFDatasource(Datasource):
             path = batch_kwargs.get("s3", path)
             reader_method = batch_kwargs.get("reader_method")
             reader = self.spark.read
+            # print(self.spark.sparkContext.getConf().getAll())
+
+            if "schema" in batch_kwargs:
+                schema = batch_kwargs.get('schema')
+                reader.schema(schema)
 
             for option in reader_options.items():
                 reader = reader.option(*option)
@@ -266,6 +279,12 @@ class SparkDFDatasource(Datasource):
         try:
             if reader_method.lower() == "delta":
                 return reader.format("delta").load
+            elif reader_method.lower() == "jdbc":
+                return reader.format("jdbc").load
+            elif reader_method.lower() == "csv":
+                return reader.format("csv").load
+            elif reader_method.lower() == "parquet":
+                return reader.format("parquet").load
 
             return getattr(reader, reader_method)
         except AttributeError:
