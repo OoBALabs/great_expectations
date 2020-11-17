@@ -281,11 +281,11 @@ class SiteIndexPageRenderer(Renderer):
                 "content_block_type": "string_template",
                 "string_template": {
                     "template": str(batch_id),
-                    "tooltip": {
-                        "content": "Batch Kwargs:\n\n"
-                        + json.dumps(batch_kwargs, indent=2),
-                        "placement": "top",
-                    },
+                    # "tooltip": {
+                    #     "content": "Batch Kwargs:\n\n"
+                    #     + json.dumps(batch_kwargs, indent=2),
+                    #     "placement": "top",
+                    # },
                     "styling": {"classes": ["m-0", "p-0"]},
                 },
             }
