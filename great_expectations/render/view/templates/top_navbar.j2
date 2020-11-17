@@ -14,10 +14,10 @@
 
 {% set static_images_dir = "https://great-expectations-web-assets.s3.us-east-2.amazonaws.com/" -%}
 
-<nav class="navbar bg-light navbar-expand-md sticky-top border-bottom" style="height: 70px">
+<nav class="navbar bg-light navbar-expand-md sticky-top border-bottom" style="height: 70px;border-bottom: 1px solid #ffffff!important;background-color: #ffffff!important">
   <div class="mr-auto">
     <nav class="d-flex align-items-center">
-      <div class="float-left navbar-brand m-0 h-100">
+     {# <div class="float-left navbar-brand m-0 h-100">
         <a href="{{ home_url }}">
           <img
             class="NO-CACHE"
@@ -26,9 +26,9 @@
             style="width: auto; height: 50px"
           />
         </a>
-      </div>
+      </div> #}
       {% if page_title %}
-        <ol class="ge-breadcrumbs breadcrumb d-md-inline-flex bg-light ml-2 mr-0 mt-0 mb-0 pt-0 pb-0 d-none">
+        <ol class="ge-breadcrumbs breadcrumb d-md-inline-flex bg-light ml-2 mr-0 mt-0 mb-0 pt-0 pb-0 d-none" style="background: #ffffff !important;">
             <li class="ge-breadcrumbs-item breadcrumb-item"><a href="{{ home_url }}">Home</a></li>
             <li class="ge-breadcrumbs-item breadcrumb-item active" aria-current="page">{{page_title}}</li>
         </ol>
