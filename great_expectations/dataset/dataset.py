@@ -539,6 +539,7 @@ class Dataset(MetaDataset):
 
         """
         columns = self.get_table_columns()
+        columns = [col for col in columns if "__eval_col_" not in col]
         if column_list is None or list(columns) == list(column_list):
             return {"success": True, "result": {"observed_value": list(columns)}}
         else:
