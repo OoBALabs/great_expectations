@@ -1,6 +1,7 @@
 import datetime
 import logging
 import uuid
+import os
 
 from great_expectations.datasource.types import BatchMarkers
 from great_expectations.types import ClassConfig
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 try:
     from pyspark.sql import DataFrame, SparkSession
+    import pyspark.sql.types as sparktypes
 except ImportError:
     SparkSession = None
     # TODO: review logging more detail here
@@ -147,6 +149,11 @@ class SparkDFDatasource(Datasource):
             builder = SparkSession.builder
             for k, v in configuration_with_defaults["spark_config"].items():
                 builder.config(k, v)
+
+            if os.getenv('SPARK_MASTER') is not None:
+                builder.master(os.getenv('SPARK_MASTER'))
+
+            
             self.spark = builder.getOrCreate()
         except AttributeError:
             logger.error(
@@ -202,6 +209,8 @@ class SparkDFDatasource(Datasource):
 
             if "schema" in batch_kwargs:
                 schema = batch_kwargs.get('schema')
+                if isinstance(schema, dict):
+                    schema = sparktypes.StructType.fromJson(schema)
                 reader.schema(schema)
 
             for option in reader_options.items():
