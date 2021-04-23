@@ -294,6 +294,9 @@ class SparkDFDatasource(Datasource):
                 return reader.format("csv").load
             elif reader_method.lower() == "parquet":
                 return reader.format("parquet").load
+            elif reader_method.lower() == "net.snowflake.spark.snowflake":
+                return reader.format("net.snowflake.spark.snowflake").load
+            
 
             return getattr(reader, reader_method)
         except AttributeError:
