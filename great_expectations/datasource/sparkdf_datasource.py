@@ -11,6 +11,7 @@ from ..dataset import SparkDFDataset
 from ..exceptions import BatchKwargsError
 from ..types.configurations import classConfigSchema
 from .datasource import Datasource
+from great_expectations.ooba_dqt.mongo_utils import MongoUtils
 
 logger = logging.getLogger(__name__)
 
@@ -217,6 +218,10 @@ class SparkDFDatasource(Datasource):
                 reader = reader.option(*option)
             reader_fn = self._get_reader_fn(reader, reader_method, path)
             df = reader_fn(path)
+
+            if reader_method == "mongo":
+                mongo_utils = MongoUtils()
+                df = mongo_utils.flatten_nested_spark_df(df)
 
         elif "query" in batch_kwargs:
             df = self.spark.sql(batch_kwargs["query"])
