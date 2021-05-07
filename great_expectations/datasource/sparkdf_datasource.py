@@ -296,6 +296,8 @@ class SparkDFDatasource(Datasource):
                 return reader.format("parquet").load
             elif reader_method.lower() == "net.snowflake.spark.snowflake":
                 return reader.format("net.snowflake.spark.snowflake").load
+            elif reader_method.lower() == "mongo":
+                return reader.format("mongo").load
             
 
             return getattr(reader, reader_method)
