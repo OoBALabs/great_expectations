@@ -1657,8 +1657,8 @@ This class holds an attribute `spark_df` which is a spark.sql.DataFrame.
         counts = np.array([row['count'] for row in tail])
         timestamp = str(tail[-1][timestamp_col])
 
-        upper = np.ceil(counts[:-1].mean() * (1.0 + percent_upper_deviation))
-        lower = np.floor(counts[:-1].mean() * (1.0 - percent_lower_deviation))
+        upper = np.ceil(counts[:-1].mean() * (1.0 + percent_upper_deviation/100))
+        lower = np.floor(counts[:-1].mean() * (1.0 - percent_lower_deviation/100))
 
         success = counts[-1] >= lower and counts[-1] <= upper
 
