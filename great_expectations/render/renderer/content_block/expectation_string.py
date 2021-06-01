@@ -179,7 +179,7 @@ class ExpectationStringRenderer(ContentBlockRenderer):
             ],
         )
         
-        template_str = "Record count on the last TIMESTEP should be within $percent_upper_deviation upper deviation and $percent_lower_deviation lower deviation from the mean count of last $num_timesteps TIMESTEPs"
+        template_str = "Record count on the last TIMESTEP should be within $percent_upper_deviation percent upper deviation and $percent_lower_deviation percent lower deviation from the mean count of last $num_timesteps TIMESTEPs"
 
         if params['timestep_unit'] is not None:
             template_str = template_str.replace("TIMESTEP", params['timestep_unit'])
