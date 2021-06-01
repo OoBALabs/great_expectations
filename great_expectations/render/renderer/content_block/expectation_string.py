@@ -165,6 +165,41 @@ class ExpectationStringRenderer(ContentBlockRenderer):
         ]
 
     @classmethod
+    def expect_record_count_to_follow_trend(
+        cls, expectation, styling=None, include_column_name=True
+    ):
+        params = substitute_none_for_missing(
+            expectation.kwargs,
+            [
+                "column",
+                "upper_deviation_ratio",
+                "lower_deviation_ratio",
+                "timesteps",
+                "timestep_unit"
+            ],
+        )
+        
+        template_str = "Record count on the last TIMESTEP should be within $upper_deviation_ratio upper deviation and $lower_deviation_ratio lower deviation from the mean count of last $timesteps TIMESTEPs"
+
+        if params['timestep_unit'] is not None:
+            template_str = template_str.replace("TIMESTEP", params['timestep_unit'])
+        else:
+            template_str = template_str.replace("TIMESTEP", 'timestep')
+
+
+        return [
+            RenderedStringTemplateContent(
+                **{
+                    "content_block_type": "string_template",
+                    "string_template": {
+                        "template": template_str,
+                        "params": params,
+                        "styling": styling,
+                    },
+                }
+            )
+        ]
+    @classmethod
     def expect_column_unique_value_count_to_be_between(
         cls, expectation, styling=None, include_column_name=True
     ):

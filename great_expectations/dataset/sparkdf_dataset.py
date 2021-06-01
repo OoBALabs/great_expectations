@@ -16,7 +16,7 @@ from dateutil.parser import parse
 from great_expectations.data_asset import DataAsset
 from great_expectations.data_asset.util import DocInherit, parse_result_format
 
-from .dataset import Dataset
+from .dataset import Dataset, MetaDataset
 from .pandas_dataset import PandasDataset
 
 logger = logging.getLogger(__name__)
@@ -35,6 +35,7 @@ try:
         expr,
         isnan,
         lag,
+        date_trunc,
     )
     from pyspark.sql.functions import length as length_
     from pyspark.sql.functions import (
@@ -1622,3 +1623,53 @@ This class holds an attribute `spark_df` which is a spark.sql.DataFrame.
             "__success",
             when(col("actual_total") == sum_total, lit(True)).otherwise(lit(False)),
         )
+
+
+    @DocInherit
+    @MetaDataset.column_aggregate_expectation
+    def expect_record_count_to_follow_trend(
+        self,
+        column,
+        percent_upper_deviation,
+        percent_lower_deviation,
+        num_timesteps,
+        timestep_unit=None,
+        result_format=None,
+        include_config=True,
+        catch_exceptions=None,
+        meta=None,
+    ):
+
+        # dataframe
+        timestamp_col = column
+        sparkdf = self.spark_df.select(timestamp_col)
+
+        # Fix column names
+        # timestamp_col = f'__eval_col_{timestamp_col}'
+        timestep_unit_list = ['year', 'month', 'day', 'hour', 'minute', 'second'] 
+        # Aggregation 
+        if timestep_unit in timestep_unit_list:
+            sparkdf = sparkdf.withColumn(timestamp_col, date_trunc(timestep_unit, col(timestamp_col)))
+
+        sparkdf = sparkdf.groupby(timestamp_col).count().orderBy(timestamp_col)
+
+        tail = sparkdf.tail(num_timesteps+1)
+        counts = np.array([row['count'] for row in tail])
+        timestamp = str(tail[-1][timestamp_col])
+
+        upper = np.ceil(counts[:-1].mean() * (1.0 + percent_upper_deviation))
+        lower = np.floor(counts[:-1].mean() * (1.0 - percent_lower_deviation))
+
+        success = counts[-1] >= lower and counts[-1] <= upper
+
+        if success:
+            observed_value = f"Count observed on {timestamp} was {counts[-1]} which was within the expected range of {int(lower)} to {int(upper)}"
+        else:
+            observed_value = f"Count observed on {timestamp} was {counts[-1]}  which was out of the expected range of {int(lower)} to {int(upper)}"
+
+        return {
+            "success": success,
+            "result": {
+                "observed_value": observed_value 
+            }
+        }
