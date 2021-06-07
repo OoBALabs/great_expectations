@@ -175,6 +175,9 @@ class DatabaseStoreBackend(StoreBackend):
         return [tuple(row) for row in self.engine.execute(sel).fetchall()]
 
     def remove_key(self, key):
+        if "ExpectationSuiteIdentifier" in str(key):
+            key = [key.expectation_suite_name]
+        
         delete_statement = self._table.delete().where(
             and_(
                 *[
